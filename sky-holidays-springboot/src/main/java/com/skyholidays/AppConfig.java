@@ -80,6 +80,26 @@ public class AppConfig implements WebMvcConfigurer {
 
     /** Creates missing tables / columns automatically, so nothing has to be run by hand in Workbench. */
     private static void migrate(JdbcTemplate db) {
+        db.execute("CREATE TABLE IF NOT EXISTS users ("
+                + "id INT AUTO_INCREMENT PRIMARY KEY, "
+                + "name VARCHAR(80) NOT NULL, "
+                + "email VARCHAR(120) NOT NULL UNIQUE, "
+                + "pass_hash VARCHAR(100) NOT NULL, "
+                + "role ENUM('admin','client') NOT NULL DEFAULT 'client', "
+                + "created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP)");
+
+        db.execute("CREATE TABLE IF NOT EXISTS items ("
+                + "id INT AUTO_INCREMENT PRIMARY KEY, "
+                + "kind ENUM('bus','room','food','place') NOT NULL, "
+                + "name VARCHAR(120) NOT NULL, "
+                + "type VARCHAR(60) DEFAULT NULL, "
+                + "loc VARCHAR(120) DEFAULT NULL, "
+                + "seats INT DEFAULT NULL, "
+                + "price DECIMAL(10,2) NOT NULL DEFAULT 0, "
+                + "status ENUM('Available','Unavailable') NOT NULL DEFAULT 'Available', "
+                + "img VARCHAR(200) DEFAULT NULL, "
+                + "created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, "
+                + "INDEX (kind))");
         db.execute("CREATE TABLE IF NOT EXISTS bookings (id INT AUTO_INCREMENT PRIMARY KEY, user_id INT NOT NULL, item_id INT NULL, "
                 + "item_name VARCHAR(120) NOT NULL, qty INT NOT NULL DEFAULT 1, travel_date DATE NOT NULL, "
                 + "status ENUM('Pending','Confirmed','Cancelled') NOT NULL DEFAULT 'Pending', created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, "
