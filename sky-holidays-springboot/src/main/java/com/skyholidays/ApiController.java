@@ -245,7 +245,7 @@ public class ApiController {
     List<Map<String, Object>> experiences() {
         List<Map<String, Object>> rows = db.queryForList(
                 "SELECT id,title,description,DATE_FORMAT(event_date,'%d %b %Y') AS event_label FROM experiences "
-                        + "ORDER BY COALESCE(event_date, DATE(created_at)) DESC, id DESC");
+                + "ORDER BY COALESCE(event_date, DATE(created_at)) DESC, id DESC");
         attachMedia(rows, "experience");
         return rows;
     }
@@ -286,6 +286,8 @@ public class ApiController {
         String tp = clean(type, 60);
         if ("bus".equals(k) && tp == null)
             throw err(HttpStatus.BAD_REQUEST, "Enter the bus type (for example AC or Non-AC).");
+        if ("bus".equals(k) && clean(loc, 120) == null)
+            throw err(HttpStatus.BAD_REQUEST, "Enter the bus location (for example Madurai).");
         BigDecimal p = BigDecimal.ZERO;
         try { if (price != null && !price.isBlank()) p = new BigDecimal(price.trim()); }
         catch (NumberFormatException e) { throw err(HttpStatus.BAD_REQUEST, "Price must be a number."); }
@@ -559,7 +561,7 @@ public class ApiController {
     List<Map<String, Object>> trips() {
         List<Map<String, Object>> rows = db.queryForList(
                 "SELECT id,category,title,location,amount,contact,DATE_FORMAT(trip_date,'%d %b %Y') AS date_label, "
-                        + "DATE_FORMAT(trip_date,'%Y-%m-%d') AS trip_date, description, status FROM trips ORDER BY id DESC");
+                + "DATE_FORMAT(trip_date,'%Y-%m-%d') AS trip_date, description, status FROM trips ORDER BY id DESC");
         attachMedia(rows, "trip");
         return rows;
     }
